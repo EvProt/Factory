@@ -8,15 +8,15 @@ namespace Factory
 {
     class Program
     {
-
-        abstract class AbsFactory    
+        abstract class Army   
         {
             public abstract General CreateGeneral();
             public abstract Captain CreateCaptain();
             public abstract Soldier CreateSoldier();
         }
 
-        class Orc: AbsFactory
+        //Армия орков
+        class OrcsArmy: Army
         {
             public override General CreateGeneral()
             {
@@ -35,7 +35,8 @@ namespace Factory
 
         }
 
-        class Elf: AbsFactory
+        //Армия эльфов
+        class ElfsArmy: Army
         {
             public override General CreateGeneral()
             {
@@ -53,6 +54,31 @@ namespace Factory
             }
         }
 
+        //АБСТРАКТНАЯ ФАБРИКА
+        abstract class AbsFactory
+        {
+            public abstract Army createArmy();
+        }
+
+        //Создание армии эльфов
+        class Elfs : AbsFactory
+        {
+            public override Army createArmy()
+            {
+                return new ElfsArmy();
+            }
+        }
+
+        //Создание армии орков
+        class Orcs : AbsFactory
+        {
+            public override Army createArmy()
+            {
+                return new OrcsArmy();
+            }
+        }
+
+        //доп. классы для создания конкретных элементов
         abstract class General
         {
             public abstract void makeGen();
@@ -115,33 +141,44 @@ namespace Factory
                 Console.WriteLine("Перед Вами маленький рядовой ЭЛЬФ!");
             }
         }
+        //конец доп.классы для создания конкретных элементов
 
+        //создание воина
+        class Warrior
+        {
+            private Army gen, cap, sold;
+
+            public Warrior (AbsFactory warrior)
+            {
+                gen = warrior.createArmy();
+                cap = warrior.createArmy();
+                sold = warrior.createArmy();
+
+            }
+
+            public void crArmy()
+            {
+                General congen = gen.CreateGeneral();
+                Captain concap = cap.CreateCaptain();
+                Soldier consold = sold.CreateSoldier();
+
+                congen.makeGen();
+                concap.makeCap();
+                consold.makeSold();
+
+            }
+        }
+        //конец создание воина
 
         static void Main(string[] args)
         {
-            General gen;
-            Captain cap;
-            Soldier sold;
-
-            AbsFactory orcs = new Orc();
-            gen = orcs.CreateGeneral();
-            cap = orcs.CreateCaptain();
-            sold = orcs.CreateSoldier();
-
-            gen.makeGen();
-            cap.makeCap();
-            sold.makeSold();
+            Warrior orcs = new Warrior(new Orcs());
+            orcs.crArmy();
 
             Console.WriteLine();
 
-            AbsFactory elfs = new Elf();
-            gen = elfs.CreateGeneral();
-            cap = elfs.CreateCaptain();
-            sold = elfs.CreateSoldier();
-
-            gen.makeGen();
-            cap.makeCap();
-            sold.makeSold();
+            Warrior elfs = new Warrior(new Elfs());
+            elfs.crArmy();
 
             Console.ReadKey();
 
